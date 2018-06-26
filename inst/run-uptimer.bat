@@ -1,0 +1,1 @@
+ "C:/Program Files/R/R-3.4.4/bin/R.exe" -e "shiny::runApp('//staff.ad.griffith.edu.au/ud/fr/s2973410/Documents/Code/uptimer/inst', launch.browser = TRUE)
