@@ -1,8 +1,8 @@
 #' @rdname preprocess.Rd
 #' @export
-#' 
-preprocess <- function(filepath = "//staff.ad.griffith.edu.au/ud/fr/s2973410/Documents/Code/uptimer/data-raw/",
-                       timelog = "time-log.csv", 
+#'
+preprocess <- function(filepath = "/data-raw/",
+                       timelog = "time-log.csv",
                        firstproj = "first-author-projects.csv",
                         students = "students.csv"){
   dat <- read.csv(paste0(filepath, timelog), stringsAsFactors = FALSE)
@@ -14,21 +14,21 @@ preprocess <- function(filepath = "//staff.ad.griffith.edu.au/ud/fr/s2973410/Doc
     as.POSIXct() %>% format("%Y-%m-%d") %>% as.Date()
   dat$Year <- year(dat$datex)
   dat$time_taken <- as.numeric(dat$endtime - dat$starttime)
-  
+
   #fix empty slots
   iemp <- which(is.na(dat$Project) | (dat$Project == ""))
   dat$Project[iemp] <- dat$Task[iemp]
   iemp <- which(is.na(dat$Task) | (dat$Task == ""))
   dat$Task[iemp] <- dat$Project[iemp]
-  
+
   rm_grps <- c("meeting", "email", "admin", "chat")
-  
+
   project_codes <- as.character(unique(dat$Project))
-  
+
   students <- as.character(read.csv(paste0(filepath,students), header = FALSE))
   sdat <- dat %>% filter(Project %in% students) %>%
     rename(Person = Project)
-  
+
   #project baselines
   baselines <- read.csv(paste0(filepath, firstproj))
   baselines <- dat %>% group_by(Project) %>% summarize(hours = sum(time_taken)/60) %>%
@@ -36,5 +36,5 @@ preprocess <- function(filepath = "//staff.ad.griffith.edu.au/ud/fr/s2973410/Doc
   mintime <- min(baselines$hours)
   maxtime <- max(baselines$hours)
   medtime <- median(baselines$hours)
-  
+
 }
